@@ -1,22 +1,26 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const productSchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true, trim: true },
-    category: { type: String, trim: true, default: '' },
-    price: { type: Number, required: true, min: 0 },
-    available: { type: Boolean, default: true },
+const productSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true
   },
-  { timestamps: true, collection: 'product' }
-)
-
-productSchema.set('toJSON', {
-  virtuals: true,
-  transform: (_doc, ret) => {
-    ret.id = ret._id.toString()
-    delete ret._id
-    delete ret.__v
+  category: {
+    type: String,
+    trim: true
+  },
+  price: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  available: {
+    type: Boolean,
+    default: true
   }
-})
+}, {
+  timestamps: true
+});
 
-module.exports = mongoose.model('Product', productSchema)
+module.exports = mongoose.model('Product', productSchema, 'product');

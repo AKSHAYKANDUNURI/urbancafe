@@ -1,32 +1,37 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const saleItemSchema = new mongoose.Schema(
-  {
-    id: { type: String, required: true },
-    name: { type: String, required: true },
-    price: { type: Number, required: true },
-    quantity: { type: Number, required: true, min: 1 },
+const saleSchema = new mongoose.Schema({
+  date: {
+    type: Date,
+    required: true,
+    default: Date.now
   },
-  { _id: false }
-)
-
-const saleSchema = new mongoose.Schema(
-  {
-    date: { type: Date, default: Date.now },
-    items: { type: [saleItemSchema], required: true },
-    total: { type: Number, required: true, min: 0 },
-  },
-  { timestamps: true, collection: 'sale' }
-)
-
-saleSchema.set('toJSON', {
-  virtuals: true,
-  transform: (_doc, ret) => {
-    ret.id = ret._id.toString()
-    ret.date = ret.date instanceof Date ? ret.date.toISOString() : ret.date
-    delete ret._id
-    delete ret.__v
+  items: [{
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true
+    },
+    name: {
+      type: String,
+      required: true
+    },
+    price: {
+      type: Number,
+      required: true
+    },
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1
+    }
+  }],
+  total: {
+    type: Number,
+    required: true,
+    min: 0
   }
-})
+}, {
+  timestamps: true
+});
 
-module.exports = mongoose.model('Sale', saleSchema)
+module.exports = mongoose.model('Sale', saleSchema, 'sale');

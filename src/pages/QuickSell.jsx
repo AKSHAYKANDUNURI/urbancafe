@@ -4,8 +4,8 @@ import ProductCard from '../components/ProductCard'
 import { FiShoppingCart, FiTrash2, FiCheck } from 'react-icons/fi'
 
 export default function QuickSell() {
-  const { products, addSale, settings } = useApp()
-  const [cart, setCart] = useState([])
+const { products, addSale, settings, loading } = useApp()
+const [cart, setCart] = useState([])
 
   const onAdd = (product) => {
     setCart((c) => {
@@ -29,6 +29,9 @@ export default function QuickSell() {
     alert('Sale saved')
   }
 
+  console.log("Products:", products)
+console.log("Visible Products:", visibleProducts)
+
   return (
     <div>
       <div className="mb-6">
@@ -38,16 +41,26 @@ export default function QuickSell() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-6">
         <div className="lg:col-span-2">
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-            {visibleProducts.map((p, i) => (
-              <ProductCard key={p.id} product={p} onAdd={onAdd} index={i} />
-            ))}
-            {visibleProducts.length === 0 && (
-              <div className="col-span-full card text-center py-12 text-slate-500">
-                No available products — add or enable some in Products page
-              </div>
-            )}
-          </div>
+         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+  {loading ? (
+    <div className="col-span-full text-center py-10">
+      Loading products...
+    </div>
+  ) : visibleProducts.length === 0 ? (
+    <div className="col-span-full card text-center py-12 text-slate-500">
+      No available products found.
+    </div>
+  ) : (
+    visibleProducts.map((p, i) => (
+      <ProductCard
+        key={p.id}
+        product={p}
+        onAdd={onAdd}
+        index={i}
+      />
+    ))
+  )}
+</div>
         </div>
 
         <div className="card-glow lg:sticky lg:top-6 lg:self-start">

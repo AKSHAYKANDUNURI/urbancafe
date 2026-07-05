@@ -1,26 +1,37 @@
-const router = require('express').Router()
-const Settings = require('../models/Settings')
+const express = require('express');
+const router = express.Router();
+const Setting = require('../models/Setting');
 
-router.get('/', async (_req, res) => {
+// GET settings (returns first/only document)
+router.get('/', async (req, res) => {
   try {
-    const settings = await Settings.findOne() || { cafeName: 'Urban Cafe', currency: '₹' }
-    res.json(settings)
-  } catch (e) {
-    res.status(500).json({ error: e.message })
+    let settings = await Setting.findOne();
+    if (!settings) {
+      settings = await Setting.create({});
+    }
+    res.json(settings);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch settings' });
   }
-})
+});
 
+// PUT update settings (updates first/only document)
 router.put('/', async (req, res) => {
   try {
-    const settings = await Settings.findOneAndUpdate(
-      {},
-      { cafeName: req.body.cafeName, currency: req.body.currency },
-      { new: true, upsert: true, runValidators: true }
-    )
-    res.json(settings)
-  } catch (e) {
-    res.status(400).json({ error: e.message })
+    let settings = await Setting.findOne();
+    if (!settings) {
+      settings = await Setting.create(req.body);
+    } else {
+      settings = await Setting.findByIdAndUpdate(
+        settings._id,
+        req.body,
+        { new: true, runValidators: true }
+      );
+    }
+    res.json(settings);
+  } catch (error) {
+    res.status(400).json({ error: 'Failed to update settings' });
   }
-})
+});
 
-module.exports = router
+module.exports = router;

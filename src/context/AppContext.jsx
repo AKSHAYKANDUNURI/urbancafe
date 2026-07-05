@@ -38,27 +38,59 @@ export const AppProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const [cats, prods, sls, sett] = await Promise.all([
-          api.get('/categories'),
-          api.get('/products'),
-          api.get('/sales'),
-          api.get('/settings'),
-        ])
-        setCategories(Array.isArray(cats) ? cats : [])
-        setProducts(Array.isArray(prods) ? prods.map(normalizeProduct) : [])
-        setSales(Array.isArray(sls) ? sls : [])
-        setSettings(sett && sett.cafeName ? sett : DEFAULT_SETTINGS)
-      } catch (e) {
-        setError('Cannot connect to the server. Make sure the backend is running and MongoDB Atlas is reachable.')
-      } finally {
-        setLoading(false)
+useEffect(() => {
+  const load = async () => {
+    setLoading(true)
+
+    try {
+      const results = await Promise.allSettled([
+        api.get('/categories'),
+        api.get('/products'),
+        api.get('/sales'),
+        api.get('/settings'),
+      ])
+
+      // Categories
+      if (results[0].status === "fulfilled") {
+        setCategories(Array.isArray(results[0].value) ? results[0].value : [])
       }
+
+      // Products
+      if (results[1].status === "fulfilled") {
+        const productsData = Array.isArray(results[1].value)
+          ? results[1].value.map(normalizeProduct)
+          : []
+
+        console.log("Loaded Products:", productsData)
+
+        setProducts(productsData)
+      }
+
+      // Sales
+      if (results[2].status === "fulfilled") {
+        setSales(Array.isArray(results[2].value) ? results[2].value : [])
+      }
+
+      // Settings
+      if (
+        results[3].status === "fulfilled" &&
+        results[3].value?.cafeName
+      ) {
+        setSettings(results[3].value)
+      } else {
+        setSettings(DEFAULT_SETTINGS)
+      }
+
+    } catch (err) {
+      console.error(err)
+      setError("Unable to load application data.")
+    } finally {
+      setLoading(false)
     }
-    load()
-  }, [])
+  }
+
+  load()
+}, [])
 
   const addCategory = async (cat) => {
     const newCat = await api.post('/categories', { name: cat.name })
