@@ -18,6 +18,10 @@ const productSchema = new mongoose.Schema({
   available: {
     type: Boolean,
     default: true
+  },
+  image: {
+    data: Buffer,
+    contentType: String
   }
 }, {
   timestamps: true

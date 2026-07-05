@@ -23,11 +23,12 @@ const api = {
 
 const normalizeProduct = (product) => ({
   ...product,
-  id: product?.id || product?._id || product?.id?.toString?.() || '',
+  id: product?.id || product?._id || '',
   name: String(product?.name || ''),
   category: String(product?.category || ''),
   price: Number(product?.price ?? 0),
   available: product?.available !== false,
+  image: product?.image || null,
 })
 
 export const AppProvider = ({ children }) => {
@@ -38,59 +39,31 @@ export const AppProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-useEffect(() => {
-  const load = async () => {
-    setLoading(true)
-
-    try {
-      const results = await Promise.allSettled([
-        api.get('/categories'),
-        api.get('/products'),
-        api.get('/sales'),
-        api.get('/settings'),
-      ])
-
-      // Categories
-      if (results[0].status === "fulfilled") {
-        setCategories(Array.isArray(results[0].value) ? results[0].value : [])
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [cats, prods, sls, sett] = await Promise.all([
+          api.get('/categories'),
+          api.get('/products'),
+          api.get('/sales'),
+          api.get('/settings'),
+        ])
+        console.log('AppContext - Raw products from API:', prods)
+        const normalizedProducts = Array.isArray(prods) ? prods.map(normalizeProduct) : []
+        console.log('AppContext - Normalized products:', normalizedProducts)
+        setCategories(Array.isArray(cats) ? cats : [])
+        setProducts(normalizedProducts)
+        setSales(Array.isArray(sls) ? sls : [])
+        setSettings(sett && sett.cafeName ? sett : DEFAULT_SETTINGS)
+      } catch (e) {
+        console.error('AppContext - Error loading data:', e)
+        setError('Cannot connect to the server. Make sure the backend is running and MongoDB Atlas is reachable.')
+      } finally {
+        setLoading(false)
       }
-
-      // Products
-      if (results[1].status === "fulfilled") {
-        const productsData = Array.isArray(results[1].value)
-          ? results[1].value.map(normalizeProduct)
-          : []
-
-        console.log("Loaded Products:", productsData)
-
-        setProducts(productsData)
-      }
-
-      // Sales
-      if (results[2].status === "fulfilled") {
-        setSales(Array.isArray(results[2].value) ? results[2].value : [])
-      }
-
-      // Settings
-      if (
-        results[3].status === "fulfilled" &&
-        results[3].value?.cafeName
-      ) {
-        setSettings(results[3].value)
-      } else {
-        setSettings(DEFAULT_SETTINGS)
-      }
-
-    } catch (err) {
-      console.error(err)
-      setError("Unable to load application data.")
-    } finally {
-      setLoading(false)
     }
-  }
-
-  load()
-}, [])
+    load()
+  }, [])
 
   const addCategory = async (cat) => {
     const newCat = await api.post('/categories', { name: cat.name })
@@ -108,29 +81,64 @@ useEffect(() => {
     setCategories(prev => prev.filter(c => c.id !== id))
   }
 
-  const addProduct = async (prod) => {
-    const payload = {
-      name: String(prod?.name || '').trim(),
-      category: String(prod?.category || '').trim(),
-      price: Number(prod?.price),
-      available: prod?.available !== false,
-    }
-    const newProd = normalizeProduct(await api.post('/products', payload))
-    setProducts(prev => [...prev, newProd])
-    return newProd
+ const addProduct = async (prod) => {
+  const payload = {
+    name: String(prod?.name || '').trim(),
+    category: String(prod?.category || '').trim(),
+    price: Number(prod?.price),
+    available: prod?.available !== false,
+    image: prod?.image || null,
   }
 
-  const updateProduct = async (id, data) => {
-    const payload = {
-      name: data?.name !== undefined ? String(data.name).trim() : undefined,
-      category: data?.category !== undefined ? String(data.category).trim() : undefined,
-      price: data?.price !== undefined ? Number(data.price) : undefined,
-      available: data?.available !== undefined ? data.available : undefined,
-    }
-    Object.keys(payload).forEach((key) => payload[key] === undefined && delete payload[key])
-    const updated = normalizeProduct(await api.put(`/products/${id}`, payload))
-    setProducts(prev => prev.map(p => p.id === id ? updated : p))
+  const newProd = normalizeProduct(
+    await api.post('/products', payload)
+  )
+
+  setProducts(prev => [...prev, newProd])
+
+  return newProd
+}
+
+ const updateProduct = async (id, data) => {
+  const payload = {
+    name:
+      data?.name !== undefined
+        ? String(data.name).trim()
+        : undefined,
+
+    category:
+      data?.category !== undefined
+        ? String(data.category).trim()
+        : undefined,
+
+    price:
+      data?.price !== undefined
+        ? Number(data.price)
+        : undefined,
+
+    available:
+      data?.available !== undefined
+        ? data.available
+        : undefined,
+
+    image:
+      data?.image !== undefined
+        ? data.image
+        : undefined,
   }
+
+  Object.keys(payload).forEach((key) => {
+    if (payload[key] === undefined) delete payload[key]
+  })
+
+  const updated = normalizeProduct(
+    await api.put(`/products/${id}`, payload)
+  )
+
+  setProducts(prev =>
+    prev.map(p => (p.id === id ? updated : p))
+  )
+}
 
   const deleteProduct = async (id) => {
     await api.delete(`/products/${id}`)
