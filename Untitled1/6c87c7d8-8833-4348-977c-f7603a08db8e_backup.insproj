@@ -1,0 +1,43 @@
+{
+    "aspectRatio": "16:9",
+    "autoFps": true,
+    "creationTime": "2026.06.29 20:33:46",
+    "definitionEdited": false,
+    "definitionTypeByUser": 0,
+    "enableEffects": true,
+    "fps": 30,
+    "frames": 0,
+    "id": "6c87c7d8-8833-4348-977c-f7603a08db8e",
+    "isPanoramic": false,
+    "lastModifiedTime": "2026.06.29 20:33:46",
+    "lowQualityProxyType": -1,
+    "mainMagnetizable": true,
+    "markTrimEnd": 0,
+    "markTrimIn": 0,
+    "markTrimVisible": false,
+    "name": "Untitled1",
+    "projectPath": "C:/Users/Aksha/Desktop/Urban Cafe/Untitled1",
+    "tracks": [
+        {
+            "audible": true,
+            "id": "2312fb6a-3d31-46b6-8ac4-5b650e35c28d",
+            "locked": false,
+            "type": 0,
+            "visible": true
+        },
+        {
+            "audible": true,
+            "id": "776a5186-4254-45e8-b626-9fc4138d25e0",
+            "locked": false,
+            "type": 2,
+            "visible": true
+        },
+        {
+            "audible": true,
+            "id": "7891cfa8-7f4f-42ec-a253-ee281a458d81",
+            "locked": false,
+            "type": 3,
+            "visible": true
+        }
+    ]
+}

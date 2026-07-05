@@ -1,0 +1,17 @@
+{
+    "album_tree": {
+        "nodes": [
+        ],
+        "root_uuids": [
+        ],
+        "version": 1
+    },
+    "non_album_tree": {
+        "nodes": [
+        ],
+        "root_uuids": [
+        ],
+        "version": 1
+    },
+    "version": 1
+}
