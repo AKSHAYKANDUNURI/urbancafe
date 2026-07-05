@@ -10,7 +10,6 @@ const links = [
   { to: '/quick-sell', label: 'Quick Sell', icon: FiShoppingCart, color: 'text-royal-burgundy' },
   { to: '/sales', label: 'Sales History', icon: FiFileText, color: 'text-royal-gold' },
   { to: '/reports', label: 'Reports', icon: FiBarChart2, color: 'text-royal-bronze' },
-  { to: '/settings', label: 'Settings', icon: FiSettings, color: 'text-royal-sage' }
 ]
 
 export default function Sidebar() {

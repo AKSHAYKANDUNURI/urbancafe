@@ -260,17 +260,13 @@ const handleSaveEdit = async () => {
 
               <option value="">Category (optional)</option>
 
-              <option>Coffee</option>
-
-              <option>Tea</option>
-
-              <option>Pastries</option>
-
-              <option>Sandwiches</option>
-
               <option>Smoothies</option>
 
-              <option>Snacks</option>
+              <option>Drinks</option>
+
+              <option>Fast Food</option>
+
+              <option>Cigarettes</option>
 
             </select>
 

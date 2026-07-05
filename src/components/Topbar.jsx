@@ -9,7 +9,6 @@ const links = [
   { to: '/quick-sell', label: 'Quick Sell' },
   { to: '/sales', label: 'Sales' },
   { to: '/reports', label: 'Reports' },
-  { to: '/settings', label: 'Settings' }
 ]
 
 export default function Topbar() {
