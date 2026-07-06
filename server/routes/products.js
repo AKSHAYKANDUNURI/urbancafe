@@ -51,9 +51,15 @@ router.post('/', async (req, res) => {
     }
     res.status(201).json(productObj);
   } catch (error) {
-    console.error('Error creating product:', error);
-    res.status(400).json({ error: 'Failed to create product' });
-  }
+  console.error("========== PRODUCT CREATE ERROR ==========");
+  console.error(error);
+  console.error(error.message);
+
+  res.status(400).json({
+    error: error.message,
+    validation: error.errors || null
+  });
+}
 });
 
 // PUT update product with binary image data
