@@ -1,13 +1,20 @@
 import React, { useMemo, useState } from 'react'
 import { useApp } from '../context/AppContext'
 import ProductCard from '../components/ProductCard'
-import { FiShoppingCart, FiTrash2, FiCheck } from 'react-icons/fi'
+import {
+  FiShoppingCart,
+  FiTrash2,
+  FiCheck,
+  FiChevronUp,
+  FiChevronDown,
+} from 'react-icons/fi'
 
 export default function QuickSell() {
   const { products, addSale, settings } = useApp()
 
-  const [cart, setCart] = useState([])
-  const [selectedCategory, setSelectedCategory] = useState('All')
+ const [cart, setCart] = useState([])
+const [showCart, setShowCart] = useState(false)
+const [selectedCategory, setSelectedCategory] = useState('All')
 
   const onAdd = (product) => {
     setCart((c) => {
@@ -89,45 +96,84 @@ export default function QuickSell() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="page-title">Quick Sell</h1>
-        <p className="page-subtitle">
-          Tap products to add — lightning fast checkout
-        </p>
+     <div className="mb-4">
+  <h1 className="page-title">Quick Sell</h1>
 
-        {/* CATEGORY FILTER */}
-        <div className="flex gap-3 overflow-x-auto pb-2 mt-5">
-          {categories.map((category) => {
-            const count =
-              category === 'All'
-                ? products.filter((p) => p.available !== false).length
-                : products.filter(
-                    (p) =>
-                      p.available !== false &&
-                      p.category === category
-                  ).length
+  <p className="page-subtitle">
+    Tap products to add — lightning fast checkout
+  </p>
+</div>
 
-            return (
-              <button
-                key={category}
-                onClick={() =>
-                  setSelectedCategory(category)
-                }
-                className={`whitespace-nowrap rounded-full px-5 py-2 transition-all duration-300 ${
-                  selectedCategory === category
-                    ? 'btn-primary'
-                    : 'btn-secondary'
-                }`}
-              >
-                {category} ({count})
-              </button>
-            )
-          })}
-        </div>
+{/* MOBILE FLOATING HEADER */}
+<div
+  className="lg:hidden sticky top-0 z-50  px-4 pt-2 pb-3"
+  style={{
+    background: "#1C1410",
+        boxShadow: "0 8px 20px rgba(0,0,0,.45)",
+
+  }}
+>
+  {/* Categories */}
+  <div className="flex gap-3 overflow-x-auto pb-3 no-scrollbar">
+    {categories.map((category) => {
+      const count =
+        category === "All"
+          ? products.filter((p) => p.available !== false).length
+          : products.filter(
+              (p) =>
+                p.available !== false &&
+                p.category === category
+            ).length
+
+      return (
+        <button
+          key={category}
+          onClick={() => setSelectedCategory(category)}
+          className={`whitespace-nowrap rounded-full px-5 py-2 ${
+            selectedCategory === category
+              ? "btn-primary"
+              : "btn-secondary"
+          }`}
+        >
+          {category} ({count})
+        </button>
+      )
+    })}
+  </div>
+
+  {/* View Cart */}
+  <div
+    className="rounded-2xl px-4 py-3 flex items-center justify-between"
+    style={{
+      background: "rgba(44,36,22,.95)",
+      border: "1px solid rgba(201,169,97,.2)",
+      backdropFilter: "blur(12px)",
+    }}
+  >
+    <div>
+      <div className="font-semibold">
+        🛒 {cart.length} Item{cart.length !== 1 ? "s" : ""}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-6">
-        {/* PRODUCTS */}
+      <div className="text-royal-gold font-display">
+        {settings.currency}
+        {total}
+      </div>
+    </div>
+
+    <button
+      className="btn-primary flex items-center gap-2"
+      onClick={() => setShowCart(true)}
+    >
+      View Cart
+      <FiChevronUp />
+    </button>
+  </div>
+</div>
+      
+   
+
+<div className="mt-3 grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-6">        {/* PRODUCTS */}
         <div className="lg:col-span-2">
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             {visibleProducts.map((p, i) => (
@@ -148,8 +194,7 @@ export default function QuickSell() {
         </div>
 
         {/* ORDER SUMMARY */}
-        <div className="card-glow lg:sticky lg:top-6 lg:self-start">
-          <div className="flex items-center gap-2 mb-4 relative z-10">
+<div className="hidden lg:block card-glow lg:sticky lg:top-6 lg:self-start">          <div className="flex items-center gap-2 mb-4 relative z-10">
             <FiShoppingCart className="text-royal-burgundy text-xl" />
             <h3 className="font-display font-bold text-lg">
               Order Summary
@@ -260,6 +305,162 @@ export default function QuickSell() {
           </div>
         </div>
       </div>
+      {/* MOBILE CART */}
+<div
+  className={`lg:hidden fixed inset-0 z-50 transition-all duration-300 ${
+    showCart
+      ? 'pointer-events-auto'
+      : 'pointer-events-none'
+  }`}
+>
+  {/* Overlay */}
+  <div
+    onClick={() => setShowCart(false)}
+    className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${
+      showCart ? 'opacity-100' : 'opacity-0'
+    }`}
+  />
+
+  {/* Bottom Sheet */}
+ <div
+  className={`absolute left-3 right-3 rounded-t-3xl shadow-2xl transition-transform duration-300 ${
+    showCart ? "translate-y-0" : "translate-y-full"
+  }`}
+  style={{
+    bottom: "88px",                 // keep above bottom nav
+    background: "#2C2416",
+    maxHeight: "calc(100vh - 180px)",
+    overflowY: "auto",
+    paddingBottom: "20px",
+  }}
+>
+    <div className="flex justify-between items-center mb-5">
+      <h3 className="font-display text-xl">
+        Order Summary
+      </h3>
+
+      <button
+        onClick={() => setShowCart(false)}
+        className="btn-secondary"
+      >
+        <FiChevronDown />
+      </button>
+    </div>
+
+    {cart.length === 0 ? (
+      <div className="text-center py-10 text-stone-500">
+        Cart Empty
+      </div>
+    ) : (
+      <>
+        <div className="space-y-3">
+          {cart.map((it) => (
+            <div
+              key={it.id}
+              className="rounded-xl p-3 flex justify-between items-center"
+              style={{
+                background:
+                  'rgba(255,255,255,.05)',
+              }}
+            >
+              <div>
+                <div className="font-semibold">
+                  {it.name}
+                </div>
+
+                <div className="text-sm text-royal-bronze">
+                  {settings.currency}
+                  {it.price}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  className="btn-secondary px-2"
+                  onClick={() =>
+                    updateQty(
+                      it.id,
+                      it.quantity - 1
+                    )
+                  }
+                >
+                  −
+                </button>
+
+                {it.quantity}
+
+                <button
+                  className="btn-secondary px-2"
+                  onClick={() =>
+                    updateQty(
+                      it.id,
+                      it.quantity + 1
+                    )
+                  }
+                >
+                  +
+                </button>
+
+                <button
+                  className="btn-danger px-2"
+                  onClick={() =>
+                    remove(it.id)
+                  }
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+       <div
+  className="mt-6 pt-4 border-t flex items-center justify-between"
+  style={{
+    borderColor: "rgba(201,169,97,0.12)",
+  }}
+>
+  <span className="text-lg font-semibold">
+    Total
+  </span>
+
+  <span className="text-3xl font-bold text-royal-gold">
+    {settings.currency}
+    {total}
+  </span>
+</div>
+
+<div
+  className="sticky mt-5 flex gap-2 pt-3 pb-3"
+  style={{
+    bottom: 0,
+    background: "#2C2416",
+    borderTop: "1px solid rgba(201,169,97,.15)",
+    zIndex: 5,
+  }}
+>
+  <button
+    className="btn-primary flex-1"
+    onClick={async () => {
+      await saveSale()
+      setShowCart(false)
+    }}
+  >
+    <FiCheck />
+    Save Sale
+  </button>
+
+  <button
+    className="btn-secondary"
+    onClick={clear}
+  >
+    <FiTrash2 />
+  </button>
+</div>
+      </>
+    )}
+  </div>
+</div>
     </div>
   )
 }

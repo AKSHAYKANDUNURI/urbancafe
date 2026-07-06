@@ -99,9 +99,26 @@ export default function App() {
       <BackgroundOrbs />
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0 min-h-screen">
-        <div className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1600px] mx-auto w-full">
+  <div
+    className="
+      flex-1
+      p-4
+      sm:p-6
+      lg:p-8
+      pb-24
+      md:pb-8
+      max-w-[1600px]
+      mx-auto
+      w-full
+    "
+  >
           <Topbar />
-          <main className="mt-6 animate-fade-in">
+         <main
+  className="mt-6 animate-fade-in"
+  style={{
+    overflowX: "hidden",
+  }}
+>
             <Routes>
               <Route path="/"            element={<Navigate to="/quick-sell" replace />} />
               <Route path="/dashboard"   element={<Dashboard />} />

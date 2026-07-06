@@ -11,8 +11,10 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://akshaykandunuri:akshaykandunuri@cluster0.3qsktjr.mongodb.net/?appName=Cluster0';
-
+const MONGODB_URI =
+  process.env.MONGODB_URI ||
+  'mongodb+srv://akshaykandunuri:akshaykandunuri@cluster0.3qsktjr.mongodb.net/urbancafe?retryWrites=true&w=majority&appName=Cluster0';
+  
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,

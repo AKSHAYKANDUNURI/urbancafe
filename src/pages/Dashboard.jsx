@@ -17,7 +17,9 @@ export default function Dashboard() {
     const map = {}
     sales.forEach((s) => s.items.forEach((it) => (map[it.id] = (map[it.id] || 0) + it.quantity)))
     const bestId = Object.keys(map).sort((a, b) => map[b] - map[a])[0]
-    return products.find((p) => p.id === bestId)?.name || '—'
+    return products.find(
+  (p) => (p.id || p._id) === bestId
+)?.name || "—"
   })()
 
   return (
@@ -64,8 +66,9 @@ export default function Dashboard() {
             <h3 className="text-xs uppercase tracking-[0.15em] text-stone-500 font-body">Recent Sales</h3>
           </div>
           <ul className="space-y-3 relative z-10">
-            {sales.slice(0, 5).map((s) => (
-              <li key={s.id} className="flex justify-between items-center py-2 border-b last:border-0"
+            {sales.slice(0, 5).map((s, index) => (
+  <li
+    key={s._id || s.id || `${s.date}-${index}`} className="flex justify-between items-center py-2 border-b last:border-0"
                 style={{ borderColor: 'rgba(201, 169, 97, 0.1)' }}>
                 <span className="text-sm text-stone-500 font-body">{new Date(s.date).toLocaleString()}</span>
                 <span className="font-display font-semibold text-royal-gold">{settings.currency}{s.total}</span>
