@@ -46,7 +46,6 @@ export const AppProvider = ({ children }) => {
           api.get('/categories'),
           api.get('/products'),
           api.get('/sales'),
-          api.get('/settings'),
         ])
         console.log('AppContext - Raw products from API:', prods)
         const normalizedProducts = Array.isArray(prods) ? prods.map(normalizeProduct) : []
@@ -54,8 +53,7 @@ export const AppProvider = ({ children }) => {
         setCategories(Array.isArray(cats) ? cats : [])
         setProducts(normalizedProducts)
         setSales(Array.isArray(sls) ? sls : [])
-        setSettings(sett && sett.cafeName ? sett : DEFAULT_SETTINGS)
-      } catch (e) {
+setSettings(DEFAULT_SETTINGS)      } catch (e) {
         console.error('AppContext - Error loading data:', e)
         setError('Cannot connect to the server. Make sure the backend is running and MongoDB Atlas is reachable.')
       } finally {
@@ -155,11 +153,7 @@ export const AppProvider = ({ children }) => {
     setSales(prev => prev.filter(s => s.id !== id))
   }
 
-  const updateSettings = async (newSettings) => {
-    const updated = await api.put('/settings', newSettings)
-    setSettings(updated)
-  }
-
+  
   const seedSampleData = async () => {
     await Promise.all([
       api.delete('/categories'),
@@ -194,9 +188,7 @@ export const AppProvider = ({ children }) => {
       })
     )
     setSales(sls.sort((a, b) => new Date(b.date) - new Date(a.date)))
-
-    const defaultSett = await api.put('/settings', DEFAULT_SETTINGS)
-    setSettings(defaultSett)
+setSettings(DEFAULT_SETTINGS)
   }
 
   const clearAllData = async () => {
@@ -208,15 +200,14 @@ export const AppProvider = ({ children }) => {
     setCategories([])
     setProducts([])
     setSales([])
-    const defaultSett = await api.put('/settings', DEFAULT_SETTINGS)
-    setSettings(defaultSett)
+   setSettings(DEFAULT_SETTINGS)
   }
 
   return (
     <AppContext.Provider value={{
       categories, products, sales, settings,
       loading, error,
-      updateSettings,
+     
       addCategory, updateCategory, deleteCategory,
       addProduct, updateProduct, deleteProduct,
       addSale, deleteSale,
